@@ -422,6 +422,10 @@ message LayerParameter {
   optional TileParameter tile_param = 138;
   optional WindowDataParameter window_data_param = 129;
   optional UpsampleParameter upsample_param = 149;
+  optional ChannelShuffleParameter channel_shuffle_param = 164;
+  optional ShuffleChannelParameter shuffle_channel_param = 165;
+  optional PermuteParameter permute_param = 202;
+  optional NormalizeParameter norm_param = 206;
 }
 
 // Message that stores parameters used to apply transformation
@@ -1456,4 +1460,32 @@ message UpsampleParameter{
     BILLINEAR = 1;
   }
   optional UpsampleMethod method = 2 [default = NEAREST];
+}
+
+message ChannelShuffleParameter {
+  optional int32 shuffle_pattern = 1 [default = 1]; // 0 or 1, so far two patterns.
+  optional int32 shuffle_channel_num = 2 [default = 1]; // exchange how many channels each time [pattern 1]
+  // group number, the same as previous ConV layer setting [pattern 1]
+  optional uint32 group = 3 [default = 1]; 
+}
+
+message ShuffleChannelParameter {
+  optional int32 group = 1 [default = 1]; //group number for shufflenet
+}
+
+message PermuteParameter {
+  // The new orders of the axes of data. Notice it should be with
+  // in the same range as the input data, and it starts from 0.
+  // Do not provide repeated order.
+  repeated uint32 order = 1;
+}
+
+message NormalizeParameter {
+  optional bool across_spatial = 1 [default = true];
+  // Initial value of scale. Default is 1.0 for all
+  optional FillerParameter scale_filler = 2;
+  // Whether or not scale parameters are shared across channels.
+  optional bool channel_shared = 3 [default = true];
+  // Epsilon for not dividing by zero while normalizing variance
+  optional float eps = 4 [default = 1e-10];
 }
